@@ -35,10 +35,9 @@ def init():
     return W1, W2, W3, WPD, WPID
 
 
-def ht(SAU):
+def ht(SAU, title):
     [y, x] = matlab.step(SAU)
     plt.grid(True)
-    title = "Переходная характеристика"
     plt.plot(x, y, "red")
     plt.title(title)
     plt.xlabel("Время")
@@ -51,7 +50,7 @@ SAU_with_PID = matlab.feedback(w1 * w2 * w3 * wpid, 1, -1)
 print('САУ с ПД регулятором: ', SAU_with_PD)
 print('САУ с ПИД регулятором: ', SAU_with_PID)
 
-ht(SAU_with_PD)
+ht(SAU_with_PD, 'Переходная характеристика САУ с ПД-регулятором')
 plt.show()
-ht(SAU_with_PID)
+ht(SAU_with_PID, 'Переходная характеристика САУ с ПИД-регулятором')
 plt.show()

@@ -3,7 +3,6 @@ import control.matlab as matlab
 import numpy as np
 import sympy as sp
 import math
-import scipy as sc
 
 
 def init():
@@ -36,10 +35,10 @@ def init():
 
 
 def ht(SAU, title):
-    print("Прямые оценки качества переходного процесса: \n")
+    print("Прямой метод оценки качества переходного процесса: \n")
     [y, t] = matlab.step(SAU)
     y_max = max(y)
-    y_ust = y[len(y)-1]
+    y_ust = y[-1]
     t_reg = None
     i_reg = None
     M = 0
@@ -81,13 +80,16 @@ def ht(SAU, title):
     for i in range(len(y)):
         if y[i] == y_max:
             t_max1 = i
-    print('Степень затухания: ', fi, ' % ')
-    print('Величина первого максимума: ', y_max, ', время его достижения : ', t[t_max1] , 'c')
+    print('Степень затухания: ', fi, ' % ', '\nВеличина первого максимума: ', y_max, ', время его достижения : ', t[t_max1] , 'c', '\n _____________________________________________________')
+    print("\nИнтегральный метод оценки качества переходного процесса: \n")
+    Ql = np.trapz(y - y_ust, t)
+    Qm = np.trapz(np.abs(y - y_ust), t)
+    print('Интегральная оценка: ', round(Ql, 2), '\nМодульная интегральная оценка: ', round(Qm, 2),'\n_____________________________________________________')
     plt.show()
 
 
 def pol(SAU):
-    print("Косвенные оценки качества переходного процесса: \n")
+    print("\nКорневой метод оценки качества переходного процесса: \n")
     pols = matlab.pzmap(SAU, True, None, 'Нули и полюса САУ')
     n = max(pols[0])
     print('Время регулирования: ', round(3/(abs(sp.re(n))), 2), 'c')
@@ -98,15 +100,17 @@ def pol(SAU):
             if abs(sp.im(pols[0][i])/sp.re(pols[0][i])) > mu:
                 mu = abs(sp.im(pols[0][i])/sp.re(pols[0][i]))
 
-    sigma = math.exp(-math.pi/mu)
+    sigma = math.exp(math.pi/mu)
 
     fi = 1 - math.exp(-2*math.pi/mu)
-    print('Степень колебательности: ', round(mu, 2))
-    print('Перерегулирование: ', round(sigma, 2))
-    print('Степень затухания: ', round(fi, 2))
+    print('Степень колебательности: ', round(mu, 2),'\nПеререгулирование: ', round(sigma, 2), '\nСтепень затухания: ', round(fi, 2)), '\nКорневой показатель колебательности: ', round(1/mu, 2)
+    plt.grid(True)
     plt.show()
+    print('_____________________________________________________')
+
 
 def get_AFH(SAU):
+    print("\nЧастотный метод оценки качества переходного процесса: \n")
     j = sp.I
     omega = sp.symbols("w")
     n = [float(x) for x in SAU.num[0][0]]
@@ -134,17 +138,17 @@ def get_AFH(SAU):
         if (y[i] > y[0] and y[i+1] < y[0]) and i!=0:
             i_cr = i
     w_sr = (x[i_cr]+x[i_cr+1])/2
-    print('Время регулирования tрег: ', 2*math.pi/w_sr,'c -', 2*2*math.pi/w_sr, ' c ')
-
-    plt.title('AFH')
-    ax = plt.gca()
-    ax.plot(x, y)
-    ax.grid(True)
+    print('Время регулирования tрег: ', round(2*math.pi/w_sr, 2), 'c -', round(2*2*math.pi/w_sr, 2), ' c ')
+    print('_____________________________________________________')
+    plt.title('Амплитудно-частотная характеристика')
+    plt.plot(x, y)
+    plt.grid(True)
     plt.xlim(0, 1)
-    plt.ylim(0, 2)
-    plt.xlabel("w")
-    plt.ylabel("A")
+    plt.ylim(0, 1.2)
+    plt.xlabel("Частота")
+    plt.ylabel("Aмплитуда")
     plt.show()
+
 
 def log_har(SAU):
     matlab.bode(SAU)
@@ -169,3 +173,4 @@ get_AFH(SAU_with_PD)
 get_AFH(SAU_with_PID)
 log_har(razSAU_PD)
 log_har(razSAU_PID)
+

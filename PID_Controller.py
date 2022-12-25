@@ -23,7 +23,7 @@ PORT_CTRL = 9101
 PORT_SP = 9111
 
 s = socket(AF_INET, SOCK_DGRAM)
-s.bind((Host, Port))
+s.bind((HOST, PORT))
 sock = socket(AF_INET, SOCK_DGRAM)
 while True:
     data, addr = s.recvfrom(1024)

@@ -34,4 +34,4 @@ while True:
     mes = struct.pack('d', pid_ctrl)
     sock.sendto(mes, (HOST, PORT_CTRL))
     mes_sp = struct.pack('d', SET_POINT)
-    sock.sendto(mes_sp, (Host, Port_sp))
+    sock.sendto(mes_sp, (HOST, PORT_SP))

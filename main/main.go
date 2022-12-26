@@ -33,8 +33,8 @@ func AddError(val float64, regError []float64) []float64 {
 	return regError
 }
 
-func SendSetPoint(addrSP net.UDPAddr) {
-	conn, err := net.DialUDP("udp", nil, &addrSP)
+func SendSetPoint(addrSP *net.UDPAddr) {
+	conn, err := net.DialUDP("udp", nil, addrSP)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,7 +81,7 @@ func main() {
 			log.Fatal(err)
 			continue
 		}
-		SendSetPoint(addrSendSetPoint)
+		SendSetPoint(&addrSendSetPoint)
 		com = ByteToFloat(p)
 		regError = AddError(SET_POINT-com, regError)
 		pidCtrl = KP*regError[1] + KI*(reg+regError[1]) + KD*(regError[1]-regError[0])
